@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* Dark mode piloté par une classe (`.dark` sur <html>) plutôt que par
+   prefers-color-scheme seul : permet à l'utilisateur de surcharger la
+   préférence système via ThemeToggle. Voir hooks/useTheme.ts. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #eefdf5;
+  --color-brand-100: #d6fae4;
+  --color-brand-200: #b0f3cd;
+  --color-brand-300: #7ce7b0;
+  --color-brand-400: #43d38d;
+  --color-brand-500: #1ab871;
+  --color-brand-600: #10945b;
+  --color-brand-700: #10764c;
+  --color-brand-800: #115e3e;
+  --color-brand-900: #0f4d35;
+
+  --animate-fade-in: fade-in 0.35s ease-out;
+  --animate-scale-in: scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  @apply bg-slate-50 text-slate-900 antialiased transition-colors dark:bg-slate-950 dark:text-slate-100;
+}

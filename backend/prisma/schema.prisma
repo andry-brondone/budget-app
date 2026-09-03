@@ -1,0 +1,140 @@
+// Schéma Prisma (Prisma 7) — architecture à base d'adapter de driver.
+// Depuis Prisma 7, le moteur Rust a été retiré (moteur TS+WASM), un
+// adapter de driver est obligatoire (voir src/config/db.ts), et le
+// client est généré dans un dossier personnalisé plutôt que dans
+// node_modules (voir generator.output ci-dessous et
+// src/config/prisma-client.ts pour le point d'import centralisé).
+// L'URL de connexion ne vit plus ici : voir prisma.config.ts.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String?  @unique
+  phone        String?  @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  refreshTokens RefreshToken[]
+  transactions  Transaction[]
+  categories    Category[]
+  budgets       Budget[]
+
+  // NB: la contrainte "email OU phone requis" est appliquée au niveau
+  // applicatif (Zod) car Prisma ne supporte pas les CHECK constraints
+  // multi-colonnes de façon portable. Voir modules/auth/auth.schema.ts.
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique @map("token_hash")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @map("expires_at")
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+model Category {
+  id     String  @id @default(uuid())
+  // null = catégorie par défaut, partagée par tous les utilisateurs
+  // (créée par le seed). Non modifiable/supprimable depuis l'app.
+  userId String? @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name  String
+  type  TransactionType
+  // Nom d'icône lucide-react (ex: "Car", "Zap") pour l'affichage frontend.
+  icon  String?
+  // Couleur hexadécimale pour l'affichage (ex: "#10945b").
+  color String?
+
+  transactions Transaction[]
+  budgets      Budget[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // NB: Postgres ne garantit pas l'unicité entre plusieurs lignes où userId
+  // est NULL (chaque NULL est distinct pour une contrainte UNIQUE) — les
+  // doublons de catégories par défaut sont évités par l'idempotence du
+  // script de seed (prisma/seed.ts), pas par cette contrainte seule.
+  @@unique([userId, name, type])
+  @@index([userId, type])
+  @@map("categories")
+}
+
+model Transaction {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type TransactionType
+
+  // Montant entier en Ariary (MGA) : la subdivision décimale de l'Ariary
+  // (iraimbilanja) n'est plus utilisée dans la vie courante à Madagascar,
+  // donc un entier évite toute la complexité de gestion des Decimal.
+  amount Int
+
+  description String?
+
+  categoryId String?   @map("category_id")
+  // onDelete: SetNull — supprimer une catégorie détache simplement les
+  // transactions liées (categoryId -> null) au lieu de les supprimer,
+  // pour préserver l'historique financier de l'utilisateur.
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  date DateTime
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId, date])
+  @@index([categoryId])
+  @@map("transactions")
+}
+
+model Budget {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId String @map("category_id")
+  // Si la catégorie liée est supprimée, le budget n'a plus de sens et est
+  // supprimé avec elle (contrairement à Transaction, dont l'historique
+  // est préservé via SetNull — voir plus haut).
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  month Int // 1-12
+  year  Int
+
+  // Plafond mensuel en Ariary (même logique entière que Transaction.amount).
+  amount Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Un seul budget par catégorie et par mois pour un utilisateur donné.
+  @@unique([userId, categoryId, month, year])
+  @@index([userId, month, year])
+  @@map("budgets")
+}

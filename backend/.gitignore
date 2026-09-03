@@ -1,0 +1,9 @@
+node_modules
+dist
+# Client Prisma généré (Prisma 7 génère hors node_modules — voir
+# generator.output dans prisma/schema.prisma). Régénéré par
+# `prisma generate`, ne doit pas être committé.
+src/generated
+.env
+*.log
+.DS_Store

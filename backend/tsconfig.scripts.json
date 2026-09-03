@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true
+  },
+  "include": ["prisma", "scripts", "prisma.config.ts"],
+  "exclude": ["scripts/migrate-legacy-categories.ts"]
+}
