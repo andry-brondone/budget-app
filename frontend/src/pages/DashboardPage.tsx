@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Download, Plus, Receipt, Tags } from 'lucide-react';
 import { useCurrentUser } from '@/hooks/useAuth';
 import { useTransactionsQuery, type TransactionFilters as TransactionFiltersValue } from '@/hooks/useTransactions';
+import { useUIStore } from '@/stores/ui.store';
 import { TransactionSummaryCards } from '@/components/transactions/TransactionSummaryCards';
 import { TransactionFilters } from '@/components/transactions/TransactionFilters';
 import { TransactionList } from '@/components/transactions/TransactionList';
-import { TransactionForm } from '@/components/transactions/TransactionForm';
 import { PendingTransactionsList } from '@/components/transactions/PendingTransactionsList';
 import { BudgetSection } from '@/components/budgets/BudgetSection';
 import { CategoryManager } from '@/components/categories/CategoryManager';
@@ -19,9 +19,15 @@ import { Spinner } from '@/components/ui/Spinner';
 export const DashboardPage = () => {
   const user = useCurrentUser();
   const [filters, setFilters] = useState<TransactionFiltersValue>({ page: 1, pageSize: 20 });
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+  // Le formulaire d'ajout de transaction est rendu au niveau du layout
+  // (voir components/layout/AppLayout.tsx) afin d'être également
+  // accessible depuis le bouton d'action flottant de la navigation
+  // mobile. Le bouton "Ajouter" de cette page ne fait que déclencher le
+  // même état partagé plutôt que de dupliquer sa propre instance de modale.
+  const openAddTransactionModal = useUIStore((state) => state.openAddTransactionModal);
 
   const { data, isLoading } = useTransactionsQuery(filters);
 
@@ -30,7 +36,7 @@ export const DashboardPage = () => {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-            Bonjour {user?.name} 👋
+            Bonjour, {user?.name}
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">Voici un aperçu de vos finances.</p>
         </div>
@@ -61,13 +67,7 @@ export const DashboardPage = () => {
               <span className="hidden sm:inline">Catégories</span>
             </span>
           </Button>
-          <Button
-            type="button"
-            className="w-auto px-4"
-            onClick={() => {
-              setIsAddModalOpen(true);
-            }}
-          >
+          <Button type="button" className="w-auto px-4" onClick={openAddTransactionModal}>
             <span className="flex items-center gap-1.5">
               <Plus size={16} />
               Ajouter
@@ -110,21 +110,6 @@ export const DashboardPage = () => {
           description="Ajoutez votre première dépense ou revenu pour commencer à suivre votre budget."
         />
       )}
-
-      {isAddModalOpen ? (
-        <Modal
-          title="Nouvelle transaction"
-          onClose={() => {
-            setIsAddModalOpen(false);
-          }}
-        >
-          <TransactionForm
-            onSuccess={() => {
-              setIsAddModalOpen(false);
-            }}
-          />
-        </Modal>
-      ) : null}
 
       {isCategoryManagerOpen ? (
         <Modal

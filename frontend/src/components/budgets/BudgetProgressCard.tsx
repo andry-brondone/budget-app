@@ -48,7 +48,7 @@ export const BudgetProgressCard = ({ budget }: BudgetProgressCardProps) => {
   };
 
   return (
-    <div className="animate-fade-in rounded-2xl border border-slate-200 bg-white p-4 transition-colors dark:border-slate-700 dark:bg-slate-800">
+    <div className="animate-fade-in rounded-2xl border border-slate-200 bg-white p-4 transition-colors dark:border-ink-700 dark:bg-ink-800">
       <div className="mb-2 flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
           {createElement(IconComponent, { size: 16, className: 'shrink-0', style: { color } })}
@@ -63,7 +63,7 @@ export const BudgetProgressCard = ({ budget }: BudgetProgressCardProps) => {
               setIsEditing((prev) => !prev);
             }}
             aria-label="Modifier le plafond"
-            className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+            className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-ink-700 dark:hover:text-slate-300"
           >
             <Pencil size={14} />
           </button>
@@ -100,7 +100,7 @@ export const BudgetProgressCard = ({ budget }: BudgetProgressCardProps) => {
         </div>
       ) : (
         <>
-          <div className="mb-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
+          <div className="mb-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-ink-700">
             <div
               className={`h-full rounded-full transition-all ${getBarColorClass(budget.percentage)}`}
               style={{ width: `${String(clampedPercentage)}%` }}

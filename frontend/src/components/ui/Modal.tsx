@@ -21,7 +21,7 @@ export const Modal = ({ title, onClose, children }: PropsWithChildren<ModalProps
 
   return (
     <div
-      className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 dark:bg-slate-950/70"
+      className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 dark:bg-black/70"
       onClick={onClose}
     >
       <div
@@ -31,7 +31,7 @@ export const Modal = ({ title, onClose, children }: PropsWithChildren<ModalProps
         onClick={(event) => {
           event.stopPropagation();
         }}
-        className="animate-scale-in max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-800"
+        className="animate-scale-in max-h-[90vh] w-full max-w-md overflow-y-auto rounded-3xl bg-white p-6 shadow-xl dark:bg-ink-900"
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
@@ -39,7 +39,7 @@ export const Modal = ({ title, onClose, children }: PropsWithChildren<ModalProps
             type="button"
             onClick={onClose}
             aria-label="Fermer"
-            className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+            className="rounded-full p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-ink-700 dark:hover:text-slate-300"
           >
             <X size={20} />
           </button>

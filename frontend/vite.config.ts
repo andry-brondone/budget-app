@@ -38,7 +38,7 @@ export default defineConfig(({ mode }) => {
           short_name: 'Vola',
           description: 'Suivez votre budget simplement, gratuitement, même hors ligne.',
           theme_color: '#10945b',
-          background_color: '#f8fafc',
+          background_color: '#0a0b0a',
           display: 'standalone',
           start_url: '/',
           icons: [

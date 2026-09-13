@@ -40,7 +40,7 @@ export default tseslint.config(
     rules: sharedRules,
   },
   {
-    // Config ESLint elle-même + script de migration ponctuel :
+    // Config ESLint elle-même + script de migration ponctuel (Phase 3) :
     // ce dernier cible intentionnellement un état intermédiaire du schéma
     // (avec l'ancien champ `category` encore présent), donc il n'est pas
     // vérifié avec les types du schéma final. Voir

@@ -1,8 +1,8 @@
-// Script de migration ponctuel : convertit les valeurs texte
+// Script de migration ponctuel (Phase 3) : convertit les valeurs texte
 // libres de l'ancien champ `Transaction.category` en véritables
 // `Category` reliées par `categoryId`.
 //
-// Ce script doit être exécuté APRÈS avoir ajouté les modèles Category
+// ⚠️ Ce script doit être exécuté APRÈS avoir ajouté les modèles Category
 // et Transaction.categoryId à ton schema.prisma de façon additive (sans
 // encore supprimer l'ancien champ `category`), et AVANT de supprimer ce
 // champ. Voir SETUP.md, section "Option B — conserver les données de test".

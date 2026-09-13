@@ -24,7 +24,7 @@ export const TransactionList = ({ transactions }: TransactionListProps) => {
 
   return (
     <>
-      <div className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:divide-slate-700 dark:border-slate-700 dark:bg-slate-800">
+      <div className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:divide-ink-700 dark:border-ink-700 dark:bg-ink-800">
         {transactions.map((transaction) => {
           const isIncome = transaction.type === 'INCOME';
           const CategoryIcon = getCategoryIcon(transaction.category?.icon ?? null);
@@ -82,7 +82,7 @@ export const TransactionList = ({ transactions }: TransactionListProps) => {
                     setEditingTransaction(transaction);
                   }}
                   aria-label="Modifier"
-                  className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+                  className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-ink-700 dark:hover:text-slate-300"
                 >
                   <Pencil size={16} />
                 </button>

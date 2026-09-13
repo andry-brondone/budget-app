@@ -89,7 +89,7 @@ export const CategoryPieChart = () => {
               type="button"
               onClick={goToPreviousMonth}
               aria-label="Mois précédent"
-              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-ink-700 dark:hover:text-slate-300"
             >
               <ChevronLeft size={16} />
             </button>
@@ -100,7 +100,7 @@ export const CategoryPieChart = () => {
               type="button"
               onClick={goToNextMonth}
               aria-label="Mois suivant"
-              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-ink-700 dark:hover:text-slate-300"
             >
               <ChevronRight size={16} />
             </button>
