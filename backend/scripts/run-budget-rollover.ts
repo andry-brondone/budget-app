@@ -4,12 +4,16 @@
 // Usage : pnpm tsx scripts/run-budget-rollover.ts
 
 import 'dotenv/config';
-import { rolloverBudgetsForCurrentMonth } from '../src/jobs/monthly-budget-rollover.job.js';
+import {
+  rolloverBudgetsForCurrentMonth,
+  rolloverOverallBudgetForCurrentMonth,
+} from '../src/jobs/monthly-budget-rollover.job.js';
 import { prisma } from '../src/config/db.js';
 
-rolloverBudgetsForCurrentMonth()
-  .then((count) => {
-    console.log(`${String(count)} budget(s) créé(s) pour le mois en cours.`);
+Promise.all([rolloverBudgetsForCurrentMonth(), rolloverOverallBudgetForCurrentMonth()])
+  .then(([categoryCount, overallCount]) => {
+    console.log(`${String(categoryCount)} budget(s) par catégorie créé(s) pour le mois en cours.`);
+    console.log(`${String(overallCount)} objectif(s) global(aux) créé(s) pour le mois en cours.`);
   })
   .catch((error: unknown) => {
     console.error(error);

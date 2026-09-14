@@ -4,6 +4,7 @@ import { useCurrentUser } from '@/hooks/useAuth';
 import { useTransactionsQuery, type TransactionFilters as TransactionFiltersValue } from '@/hooks/useTransactions';
 import { useUIStore } from '@/stores/ui.store';
 import { TransactionSummaryCards } from '@/components/transactions/TransactionSummaryCards';
+import { OverallBudgetRing } from '@/components/dashboard/OverallBudgetRing';
 import { TransactionFilters } from '@/components/transactions/TransactionFilters';
 import { TransactionList } from '@/components/transactions/TransactionList';
 import { PendingTransactionsList } from '@/components/transactions/PendingTransactionsList';
@@ -75,6 +76,8 @@ export const DashboardPage = () => {
           </Button>
         </div>
       </div>
+
+      <OverallBudgetRing />
 
       <PendingTransactionsList />
 

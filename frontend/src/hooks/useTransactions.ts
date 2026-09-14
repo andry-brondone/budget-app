@@ -59,6 +59,7 @@ export const useTransactionsQuery = (filters: TransactionFilters) => {
 const invalidateDependentCaches = (queryClient: ReturnType<typeof useQueryClient>): void => {
   void queryClient.invalidateQueries({ queryKey: [TRANSACTIONS_KEY] });
   void queryClient.invalidateQueries({ queryKey: ['budgets'] });
+  void queryClient.invalidateQueries({ queryKey: ['overall-budget'] });
   void queryClient.invalidateQueries({ queryKey: ['dashboard'] });
 };
 

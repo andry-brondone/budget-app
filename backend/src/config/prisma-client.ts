@@ -11,6 +11,7 @@ export type {
   Category,
   Transaction,
   Budget,
+  OverallBudget,
   TransactionType,
   Prisma,
 } from '../generated/prisma-client/client.js';

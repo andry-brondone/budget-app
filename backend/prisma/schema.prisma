@@ -24,10 +24,11 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  refreshTokens RefreshToken[]
-  transactions  Transaction[]
-  categories    Category[]
-  budgets       Budget[]
+  refreshTokens  RefreshToken[]
+  transactions   Transaction[]
+  categories     Category[]
+  budgets        Budget[]
+  overallBudgets OverallBudget[]
 
   // NB: la contrainte "email OU phone requis" est appliquée au niveau
   // applicatif (Zod) car Prisma ne supporte pas les CHECK constraints
@@ -137,4 +138,26 @@ model Budget {
   @@unique([userId, categoryId, month, year])
   @@index([userId, month, year])
   @@map("budgets")
+}
+
+// Plafond global de dépenses pour un mois donné, indépendant de toute
+// catégorie — distinct du modèle Budget ci-dessus, qui lui est toujours
+// rattaché à une catégorie précise. Représente l'objectif de dépenses
+// mensuel affiché en évidence sur le tableau de bord.
+model OverallBudget {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  month Int // 1-12
+  year  Int
+
+  amount Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Un seul objectif global par mois pour un utilisateur donné.
+  @@unique([userId, month, year])
+  @@map("overall_budgets")
 }

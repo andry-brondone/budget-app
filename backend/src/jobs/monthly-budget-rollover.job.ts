@@ -56,15 +56,59 @@ export const rolloverBudgetsForCurrentMonth = async (): Promise<number> => {
   return createdCount;
 };
 
+/**
+ * Reconduit l'objectif de dépenses global (indépendant des catégories,
+ * voir modèle OverallBudget) du mois précédent vers le mois en cours,
+ * selon le même principe et la même contrainte d'idempotence que
+ * `rolloverBudgetsForCurrentMonth` ci-dessus.
+ */
+export const rolloverOverallBudgetForCurrentMonth = async (): Promise<number> => {
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const previous = getPreviousMonth(currentMonth, currentYear);
+
+  const previousOverallBudgets = await prisma.overallBudget.findMany({
+    where: { month: previous.month, year: previous.year },
+  });
+
+  let createdCount = 0;
+
+  for (const overallBudget of previousOverallBudgets) {
+    const existing = await prisma.overallBudget.findUnique({
+      where: {
+        userId_month_year: { userId: overallBudget.userId, month: currentMonth, year: currentYear },
+      },
+    });
+
+    if (existing) continue;
+
+    await prisma.overallBudget.create({
+      data: {
+        userId: overallBudget.userId,
+        month: currentMonth,
+        year: currentYear,
+        amount: overallBudget.amount,
+      },
+    });
+    createdCount += 1;
+  }
+
+  return createdCount;
+};
+
 /** Programme la reconduction pour s'exécuter à minuit le 1er de chaque
- * mois, à l'heure de Madagascar. */
+ * mois, à l'heure de Madagascar. Couvre à la fois les budgets par
+ * catégorie et l'objectif global mensuel. */
 export const scheduleMonthlyBudgetRollover = (): void => {
   cron.schedule(
     '0 0 1 * *',
     () => {
-      rolloverBudgetsForCurrentMonth()
-        .then((count) => {
-          logger.info(`Reconduction des budgets : ${String(count)} budget(s) créé(s) pour le nouveau mois.`);
+      Promise.all([rolloverBudgetsForCurrentMonth(), rolloverOverallBudgetForCurrentMonth()])
+        .then(([categoryCount, overallCount]) => {
+          logger.info(
+            `Reconduction des budgets : ${String(categoryCount)} budget(s) par catégorie et ${String(overallCount)} objectif(s) global(aux) créés pour le nouveau mois.`,
+          );
         })
         .catch((error: unknown) => {
           logger.error({ error }, 'Échec de la reconduction automatique des budgets');
